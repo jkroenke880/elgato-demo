@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>All Products — Elgato</title>
+  <link rel="stylesheet" href="css/style.css">
+  <script src="js/analytics.js"></script>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-brand" aria-label="Elgato — Home">
+    <div class="nav-logo"><img src="images/elgato-logo.png" alt="Elgato"></div>
+  </a>
+  <ul class="nav-links">
+    <li><a href="products.html">Products</a></li>
+    <li><a href="cart.html" class="cart-link">Cart <span id="cart-count"></span></a></li>
+  </ul>
+</nav>
+
+<div class="page-header">
+  <h1>All Products</h1>
+  <p>Stream controllers, cameras, microphones, lighting &amp; capture cards</p>
+</div>
+
+<section class="section">
+  <div class="product-grid" id="product-grid"></div>
+</section>
+
+<footer>
+  &copy; 2024 Elgato, a CORSAIR company &nbsp;&middot;&nbsp; Demo environment powered by Segment
+</footer>
+
+<script src="js/catalog.js"></script>
+<script src="js/cart.js"></script>
+<script src="js/event-debugger.js"></script>
+<script>
+  var icons = { 'Stream Controllers': '🎛️', 'Cameras': '📷', 'Microphones': '🎤', 'Lighting': '💡', 'Capture Cards': '🎮' };
+  var grid = document.getElementById('product-grid');
+
+  CATALOG.forEach(function(p) {
+    var card = document.createElement('div');
+    card.className = 'product-card';
+    card.innerHTML =
+      '<div class="product-image">' + (p.image ? '<img src="' + p.image + '" alt="' + p.name + '">' : '<span class="product-image-icon">' + (icons[p.category] || '📦') + '</span>') + '</div>' +
+      '<div class="product-info">' +
+        '<div class="product-category">' + p.category + '</div>' +
+        '<div class="product-name">' + p.name + '</div>' +
+        '<div class="product-price">$' + p.price.toFixed(2) + '</div>' +
+        '<a href="product.html?id=' + p.product_id + '" class="btn btn-primary" style="width:100%;text-align:center;">View Product</a>' +
+      '</div>';
+    grid.appendChild(card);
+  });
+
+  updateCartBadge();
+
+  analytics.page('Product List');
+  analytics.track('Product List Viewed', {
+    list_id: 'all-products',
+    category: 'Streaming Gear',
+    products: CATALOG.map(function(p, i) {
+      return {
+        product_id: p.product_id,
+        sku: p.sku,
+        name: p.name,
+        price: p.price,
+        category: p.category,
+        brand: p.brand,
+        position: i + 1
+      };
+    })
+  });
+</script>
+</body>
+</html>

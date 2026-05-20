@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Product — Elgato</title>
+  <link rel="stylesheet" href="css/style.css">
+  <script src="js/analytics.js"></script>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-brand" aria-label="Elgato — Home">
+    <div class="nav-logo"><img src="images/elgato-logo.png" alt="Elgato"></div>
+  </a>
+  <ul class="nav-links">
+    <li><a href="products.html">Products</a></li>
+    <li><a href="cart.html" class="cart-link">Cart <span id="cart-count"></span></a></li>
+  </ul>
+</nav>
+
+<div id="product-detail-container"></div>
+
+<footer>
+  &copy; 2024 Elgato, a CORSAIR company &nbsp;&middot;&nbsp; Demo environment powered by Segment
+</footer>
+
+<script src="js/catalog.js"></script>
+<script src="js/cart.js"></script>
+<script src="js/event-debugger.js"></script>
+<script>
+  var icons = { 'Stream Controllers': '🎛️', 'Cameras': '📷', 'Microphones': '🎤', 'Lighting': '💡', 'Capture Cards': '🎮' };
+  var params = new URLSearchParams(window.location.search);
+  var productId = params.get('id');
+  var product = getProductById(productId);
+  var container = document.getElementById('product-detail-container');
+
+  if (!product) {
+    container.innerHTML = '<div class="cart-empty" style="padding:80px 40px"><p>Product not found.</p><a href="products.html" class="btn btn-primary">Back to Products</a></div>';
+  } else {
+    document.title = product.name + ' — Elgato';
+
+    container.innerHTML =
+      '<div class="product-detail">' +
+        '<div class="product-detail-image">' + (product.image ? '<img src="' + product.image + '" alt="' + product.name + '">' : '<span>' + (icons[product.category] || '📦') + '</span>') + '</div>' +
+        '<div class="product-detail-info">' +
+          '<div class="product-category">' + product.category + '</div>' +
+          '<h1>' + product.name + '</h1>' +
+          '<div class="product-detail-price">$' + product.price.toFixed(2) + '</div>' +
+          '<p class="product-detail-description">' + product.description + '</p>' +
+          '<p class="product-detail-sku">SKU: ' + product.sku + '</p>' +
+          '<div class="qty-selector">' +
+            '<label for="qty">Qty</label>' +
+            '<input type="number" id="qty" value="1" min="1" max="10">' +
+          '</div>' +
+          '<button class="btn btn-primary" id="add-to-cart-btn" style="width:100%;padding:14px;">Add to Cart</button>' +
+          '<p class="add-to-cart-confirm" id="atc-confirm">&#10003; Added to cart</p>' +
+        '</div>' +
+      '</div>';
+
+    document.getElementById('add-to-cart-btn').addEventListener('click', function() {
+      var qty = parseInt(document.getElementById('qty').value, 10) || 1;
+      addToCart(product, qty);
+
+      analytics.track('Product Added', {
+        cart_id: localStorage.getItem('elgato_cart_id') || (function() {
+          var id = generateId();
+          localStorage.setItem('elgato_cart_id', id);
+          return id;
+        })(),
+        product_id: product.product_id,
+        sku: product.sku,
+        name: product.name,
+        price: product.price,
+        quantity: qty,
+        category: product.category,
+        brand: product.brand
+      });
+
+      var confirm = document.getElementById('atc-confirm');
+      confirm.style.display = 'block';
+      setTimeout(function() { confirm.style.display = 'none'; }, 2000);
+    });
+
+    updateCartBadge();
+
+    analytics.page('Product', { title: product.name });
+    analytics.track('Product Viewed', {
+      product_id: product.product_id,
+      sku: product.sku,
+      name: product.name,
+      price: product.price,
+      category: product.category,
+      brand: product.brand
+    });
+  }
+</script>
+</body>
+</html>

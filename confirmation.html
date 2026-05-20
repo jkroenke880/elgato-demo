@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Order Confirmed — Elgato</title>
+  <link rel="stylesheet" href="css/style.css">
+  <script src="js/analytics.js"></script>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-brand" aria-label="Elgato — Home">
+    <div class="nav-logo"><img src="images/elgato-logo.png" alt="Elgato"></div>
+  </a>
+  <ul class="nav-links">
+    <li><a href="products.html">Products</a></li>
+    <li><a href="cart.html" class="cart-link">Cart <span id="cart-count"></span></a></li>
+  </ul>
+</nav>
+
+<div class="confirmation-container">
+  <div class="confirmation-icon">&#10003;</div>
+  <h1>Order Confirmed</h1>
+  <p id="confirm-message">Thanks for your order! Your gear is on its way.</p>
+  <p class="order-number" id="order-number"></p>
+  <a href="products.html" class="btn btn-outline">Continue Shopping</a>
+</div>
+
+<footer>
+  &copy; 2024 Elgato, a CORSAIR company &nbsp;&middot;&nbsp; Demo environment powered by Segment
+</footer>
+
+<script src="js/catalog.js"></script>
+<script src="js/cart.js"></script>
+<script src="js/event-debugger.js"></script>
+<script>
+  var order = JSON.parse(localStorage.getItem('elgato_last_order') || '{}');
+
+  if (order.name) {
+    document.getElementById('confirm-message').textContent =
+      'Thanks, ' + order.name.split(' ')[0] + '! Your order is confirmed and on its way.';
+  }
+  if (order.order_id) {
+    document.getElementById('order-number').textContent = 'Order #' + order.order_id;
+  }
+
+  updateCartBadge();
+  analytics.page('Order Confirmation');
+</script>
+</body>
+</html>

@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cart — Elgato</title>
+  <link rel="stylesheet" href="css/style.css">
+  <script src="js/analytics.js"></script>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-brand" aria-label="Elgato — Home">
+    <div class="nav-logo"><img src="images/elgato-logo.png" alt="Elgato"></div>
+  </a>
+  <ul class="nav-links">
+    <li><a href="products.html">Products</a></li>
+    <li><a href="cart.html" class="cart-link">Cart <span id="cart-count"></span></a></li>
+  </ul>
+</nav>
+
+<div class="cart-container">
+  <h1>Your Cart</h1>
+  <div id="cart-contents"></div>
+</div>
+
+<footer>
+  &copy; 2024 Elgato, a CORSAIR company &nbsp;&middot;&nbsp; Demo environment powered by Segment
+</footer>
+
+<script src="js/catalog.js"></script>
+<script src="js/cart.js"></script>
+<script src="js/event-debugger.js"></script>
+<script>
+  function renderCart() {
+    var cart = getCart();
+    var container = document.getElementById('cart-contents');
+
+    if (cart.length === 0) {
+      container.innerHTML =
+        '<div class="cart-empty">' +
+          '<p>Your cart is empty.</p>' +
+          '<a href="products.html" class="btn btn-primary">Shop Products</a>' +
+        '</div>';
+      return;
+    }
+
+    var itemsHtml = cart.map(function(item) {
+      return '<div class="cart-item">' +
+        '<div><div class="cart-item-name">' + item.name + '</div>' +
+          '<div class="cart-item-category">' + item.category + ' &mdash; ' + item.brand + '</div></div>' +
+        '<div class="cart-item-price">$' + item.price.toFixed(2) + '</div>' +
+        '<div>Qty: <strong>' + item.quantity + '</strong></div>' +
+        '<div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px">' +
+          '<div class="cart-item-total">$' + (item.price * item.quantity).toFixed(2) + '</div>' +
+          '<button class="btn btn-danger" onclick="handleRemove(\'' + item.product_id + '\')">Remove</button>' +
+        '</div>' +
+      '</div>';
+    }).join('');
+
+    var total = getCartTotal();
+    var summaryHtml =
+      '<div class="cart-summary">' +
+        '<div class="cart-summary-total"><span>Total</span>$' + total.toFixed(2) + '</div>' +
+        '<a href="checkout.html" class="btn btn-primary">Proceed to Checkout &rarr;</a>' +
+      '</div>';
+
+    container.innerHTML = itemsHtml + summaryHtml;
+  }
+
+  function handleRemove(productId) {
+    removeFromCart(productId);
+    renderCart();
+    updateCartBadge();
+  }
+
+  renderCart();
+  updateCartBadge();
+
+  analytics.page('Cart');
+
+  var cart = getCart();
+  if (cart.length > 0) {
+    analytics.track('Cart Viewed', {
+      cart_id: localStorage.getItem('elgato_cart_id') || generateId(),
+      products: cart.map(function(item) {
+        return {
+          product_id: item.product_id,
+          sku: item.sku,
+          name: item.name,
+          price: item.price,
+          quantity: item.quantity,
+          category: item.category,
+          brand: item.brand
+        };
+      })
+    });
+  }
+</script>
+</body>
+</html>

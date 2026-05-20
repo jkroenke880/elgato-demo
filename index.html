@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Elgato — Level Up Your Setup</title>
+  <link rel="stylesheet" href="css/style.css">
+  <script src="js/analytics.js"></script>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-brand" aria-label="Elgato — Home">
+    <div class="nav-logo"><img src="images/elgato-logo.png" alt="Elgato"></div>
+  </a>
+  <ul class="nav-links">
+    <li><a href="products.html">Products</a></li>
+    <li><a href="cart.html" class="cart-link">Cart <span id="cart-count"></span></a></li>
+  </ul>
+</nav>
+
+<section class="hero">
+  <p class="hero-eyebrow">Built for Creators</p>
+  <h1>Create More.<br><span>Stream Better.</span></h1>
+  <p>Professional streaming gear engineered for content creators who demand the best.</p>
+  <a href="products.html" class="btn btn-primary">Shop All Products</a>
+</section>
+
+<section class="section">
+  <div class="section-header">
+    <h2>Featured Products</h2>
+    <a href="products.html">View All &rarr;</a>
+  </div>
+  <div class="product-grid" id="featured-grid"></div>
+</section>
+
+<footer>
+  &copy; 2024 Elgato, a CORSAIR company &nbsp;&middot;&nbsp; Demo environment powered by Segment
+</footer>
+
+<script src="js/catalog.js"></script>
+<script src="js/cart.js"></script>
+<script src="js/event-debugger.js"></script>
+<script>
+  analytics.page('Home');
+
+  var featured = CATALOG.slice(0, 3);
+  var grid = document.getElementById('featured-grid');
+  var icons = { 'Stream Controllers': '🎛️', 'Cameras': '📷', 'Microphones': '🎤', 'Lighting': '💡', 'Capture Cards': '🎮' };
+
+  featured.forEach(function(p) {
+    var card = document.createElement('div');
+    card.className = 'product-card';
+    card.innerHTML =
+      '<div class="product-image">' + (p.image ? '<img src="' + p.image + '" alt="' + p.name + '">' : '<span class="product-image-icon">' + (icons[p.category] || '📦') + '</span>') + '</div>' +
+      '<div class="product-info">' +
+        '<div class="product-category">' + p.category + '</div>' +
+        '<div class="product-name">' + p.name + '</div>' +
+        '<div class="product-price">$' + p.price.toFixed(2) + '</div>' +
+        '<a href="product.html?id=' + p.product_id + '" class="btn btn-primary" style="width:100%;text-align:center;">View Product</a>' +
+      '</div>';
+    grid.appendChild(card);
+  });
+
+  updateCartBadge();
+</script>
+</body>
+</html>

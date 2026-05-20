@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Checkout — Elgato</title>
+  <link rel="stylesheet" href="css/style.css">
+  <script src="js/analytics.js"></script>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-brand" aria-label="Elgato — Home">
+    <div class="nav-logo"><img src="images/elgato-logo.png" alt="Elgato"></div>
+  </a>
+  <ul class="nav-links">
+    <li><a href="products.html">Products</a></li>
+    <li><a href="cart.html" class="cart-link">Cart <span id="cart-count"></span></a></li>
+  </ul>
+</nav>
+
+<div class="checkout-container">
+  <form id="checkout-form">
+    <h1>Checkout</h1>
+
+    <div class="form-section">
+      <div class="form-section-title">Contact Information</div>
+      <div class="form-row">
+        <div class="form-group">
+          <label for="first-name">First Name</label>
+          <input type="text" id="first-name" placeholder="Alex" required>
+        </div>
+        <div class="form-group">
+          <label for="last-name">Last Name</label>
+          <input type="text" id="last-name" placeholder="Chen" required>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="email">Email Address</label>
+        <input type="email" id="email" placeholder="alex.chen@email.com" required>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <div class="form-section-title">Shipping Address</div>
+      <div class="form-group">
+        <label for="address">Street Address</label>
+        <input type="text" id="address" placeholder="123 Main St" required>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label for="city">City</label>
+          <input type="text" id="city" placeholder="Fremont" required>
+        </div>
+        <div class="form-group">
+          <label for="zip">ZIP Code</label>
+          <input type="text" id="zip" placeholder="94538" required>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <div class="form-section-title">Payment</div>
+      <div class="form-group">
+        <label for="card-number">Card Number</label>
+        <input type="text" id="card-number" placeholder="4242 4242 4242 4242" maxlength="19" required>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label for="card-expiry">Expiration</label>
+          <input type="text" id="card-expiry" placeholder="MM / YY" maxlength="7" required>
+        </div>
+        <div class="form-group">
+          <label for="card-cvc">CVC</label>
+          <input type="text" id="card-cvc" placeholder="123" maxlength="4" required>
+        </div>
+      </div>
+    </div>
+
+    <button type="submit" class="btn btn-primary" style="width:100%;padding:16px;font-size:14px;">
+      Place Order
+    </button>
+  </form>
+
+  <div class="order-summary">
+    <h2>Order Summary</h2>
+    <div id="summary-items"></div>
+    <div class="summary-total">
+      <span>Total</span>
+      <span id="summary-total">$0.00</span>
+    </div>
+  </div>
+</div>
+
+<footer>
+  &copy; 2024 Elgato, a CORSAIR company &nbsp;&middot;&nbsp; Demo environment powered by Segment
+</footer>
+
+<script src="js/catalog.js"></script>
+<script src="js/cart.js"></script>
+<script src="js/event-debugger.js"></script>
+<script>
+  var cart = getCart();
+  var orderId = generateId();
+
+  var summaryItems = document.getElementById('summary-items');
+  cart.forEach(function(item) {
+    var row = document.createElement('div');
+    row.className = 'summary-item';
+    row.innerHTML =
+      '<span class="summary-item-name">' + item.name + ' &times;' + item.quantity + '</span>' +
+      '<span class="summary-item-price">$' + (item.price * item.quantity).toFixed(2) + '</span>';
+    summaryItems.appendChild(row);
+  });
+  document.getElementById('summary-total').textContent = '$' + getCartTotal().toFixed(2);
+
+  updateCartBadge();
+
+  analytics.page('Checkout');
+
+  if (cart.length > 0) {
+    analytics.track('Checkout Started', {
+      order_id: orderId,
+      value: getCartTotal(),
+      currency: 'USD',
+      products: cart.map(function(item) {
+        return {
+          product_id: item.product_id,
+          sku: item.sku,
+          name: item.name,
+          price: item.price,
+          quantity: item.quantity,
+          category: item.category,
+          brand: item.brand
+        };
+      })
+    });
+  }
+
+  document.getElementById('checkout-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    var firstName = document.getElementById('first-name').value.trim();
+    var lastName = document.getElementById('last-name').value.trim();
+    var email = document.getElementById('email').value.trim();
+    var fullName = firstName + ' ' + lastName;
+    var total = getCartTotal();
+
+    localStorage.setItem('elgato_user_email', email);
+
+    analytics.identify(email, {
+      name: fullName,
+      email: email,
+      firstName: firstName,
+      lastName: lastName
+    });
+
+    analytics.track('Order Completed', {
+      order_id: orderId,
+      total: total,
+      revenue: total,
+      currency: 'USD',
+      products: cart.map(function(item) {
+        return {
+          product_id: item.product_id,
+          sku: item.sku,
+          name: item.name,
+          price: item.price,
+          quantity: item.quantity,
+          category: item.category,
+          brand: item.brand
+        };
+      })
+    }, function() {
+      localStorage.setItem('elgato_last_order', JSON.stringify({
+        order_id: orderId,
+        name: fullName,
+        email: email,
+        total: total
+      }));
+      clearCart();
+      window.location.href = 'confirmation.html';
+    });
+  });
+</script>
+</body>
+</html>

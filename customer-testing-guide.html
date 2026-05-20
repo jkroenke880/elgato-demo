@@ -1,0 +1,633 @@
+no i mean<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Segment Demo Environment — Customer Testing Guide</title>
+  <style>
+    body {
+      font-family: 'Google Sans', Arial, sans-serif;
+      font-size: 11pt;
+      line-height: 1.6;
+      color: #202124;
+      max-width: 750px;
+      margin: 48px auto;
+      padding: 0 32px;
+    }
+    h1 { font-size: 20pt; font-weight: 700; color: #1a1a1a; margin-bottom: 4px; }
+    h2 { font-size: 13pt; font-weight: 700; color: #1a1a1a; margin-top: 28px; margin-bottom: 8px; border-bottom: 1px solid #e0e0e0; padding-bottom: 4px; }
+    h3 { font-size: 11pt; font-weight: 700; color: #1a1a1a; margin-top: 20px; margin-bottom: 4px; }
+    p  { margin: 6px 0 10px; }
+    a  { color: #1a73e8; }
+    .subtitle { font-size: 10pt; color: #5f6368; margin-bottom: 32px; }
+    table { border-collapse: collapse; width: 100%; margin: 12px 0 20px; font-size: 10pt; }
+    th { background: #f8f9fa; text-align: left; padding: 8px 12px; font-weight: 600; border: 1px solid #dadce0; }
+    td { padding: 7px 12px; border: 1px solid #dadce0; vertical-align: top; }
+    tr:nth-child(even) td { background: #fafafa; }
+    .chip {
+      display: inline-block;
+      padding: 2px 10px;
+      border-radius: 12px;
+      font-size: 9pt;
+      font-weight: 600;
+    }
+    .chip-blue   { background: #e8f0fe; color: #1967d2; }
+    .chip-green  { background: #e6f4ea; color: #137333; }
+    .chip-orange { background: #fce8b2; color: #b06000; }
+    .chip-grey   { background: #f1f3f4; color: #3c4043; }
+    .chip-red    { background: #fce8e6; color: #c5221f; }
+    .note {
+      background: #e8f0fe;
+      border-left: 3px solid #1a73e8;
+      padding: 10px 14px;
+      margin: 16px 0;
+      border-radius: 0 4px 4px 0;
+      font-size: 10pt;
+    }
+    .tip {
+      background: #e6f4ea;
+      border-left: 3px solid #137333;
+      padding: 10px 14px;
+      margin: 16px 0;
+      border-radius: 0 4px 4px 0;
+      font-size: 10pt;
+    }
+    code {
+      font-family: 'Roboto Mono', monospace;
+      font-size: 9.5pt;
+      background: #f1f3f4;
+      padding: 1px 5px;
+      border-radius: 3px;
+    }
+    ul { padding-left: 20px; margin: 6px 0 10px; }
+    li { margin-bottom: 4px; }
+    .section-divider { border: none; border-top: 2px solid #e0e0e0; margin: 36px 0 28px; }
+    .logo-row { display: flex; gap: 24px; align-items: center; margin-bottom: 8px; }
+  </style>
+</head>
+<body>
+
+<h1>Segment Demo Environment</h1>
+<p class="subtitle">Customer Testing Guide &nbsp;·&nbsp; Prepared by Twilio Segment Solutions Engineering &nbsp;·&nbsp; May 2026</p>
+
+<p>This document describes the two demo storefronts, the Segment workspace configuration, and the test user personas available for your evaluation. Everything here is live and ready to use today.</p>
+
+<hr class="section-divider">
+
+<h2>1. Demo Websites</h2>
+<p>Two fully functional e-commerce demo sites are hosted and accessible via public URLs. Each site sends real Segment events — page views, product views, add-to-cart, checkout, and order completion — and fires <code>identify</code> calls on checkout to resolve users in Unify.</p>
+
+<table>
+  <tr>
+    <th>Site</th>
+    <th>URL</th>
+    <th>Segment Source</th>
+    <th>Unify Space</th>
+  </tr>
+  <tr>
+    <td><strong>Corsair</strong><br><span style="font-size:9pt;color:#5f6368">Gaming peripherals &amp; hardware</span></td>
+    <td><a href="https://ca108d55718b.ngrok.app">ca108d55718b.ngrok.app</a></td>
+    <td><code>8kaqLmYEhmEHzemxYWsD6rip6GHFaj9L</code></td>
+    <td>Corsair</td>
+  </tr>
+  <tr>
+    <td><strong>Elgato</strong><br><span style="font-size:9pt;color:#5f6368">Streaming gear &amp; creator equipment</span></td>
+    <td><a href="https://609c6fa8bd76.ngrok.app">609c6fa8bd76.ngrok.app</a></td>
+    <td><code>TP7mEFeOwIMczsGdFmBQsbG08b6gXJTP</code></td>
+    <td>Elgato</td>
+  </tr>
+</table>
+
+<div class="tip">
+  <strong>Tip:</strong> Both sites use separate browser <code>localStorage</code> namespaces, so you can test both in the same browser session without carts or identities bleeding across. Each site also has an <strong>Events</strong> debugger widget (bottom-left corner) that shows every Segment call fired in real time.
+</div>
+
+<h3>Corsair Product Catalog</h3>
+<table>
+  <tr><th>Product</th><th>Category</th><th>Price</th></tr>
+  <tr><td>K100 RGB Optical-Mechanical Keyboard</td><td>Keyboards</td><td>$169.99</td></tr>
+  <tr><td>Dark Core RGB Pro SE Wireless Mouse</td><td>Mice</td><td>$109.99</td></tr>
+  <tr><td>HS80 RGB Wireless Gaming Headset</td><td>Headsets</td><td>$159.99</td></tr>
+  <tr><td>ST100 RGB Premium Headset Stand</td><td>Accessories</td><td>$79.99</td></tr>
+  <tr><td>iCUE H150i RGB Elite Liquid CPU Cooler</td><td>Cooling</td><td>$179.99</td></tr>
+</table>
+
+<h3>Elgato Product Catalog</h3>
+<table>
+  <tr><th>Product</th><th>Category</th><th>Price</th></tr>
+  <tr><td>Stream Deck MK.2</td><td>Stream Controllers</td><td>$149.99</td></tr>
+  <tr><td>Stream Deck XL</td><td>Stream Controllers</td><td>$249.99</td></tr>
+  <tr><td>Facecam Pro</td><td>Cameras</td><td>$299.99</td></tr>
+  <tr><td>Wave:3 USB Microphone</td><td>Microphones</td><td>$149.99</td></tr>
+  <tr><td>Key Light</td><td>Lighting</td><td>$199.99</td></tr>
+  <tr><td>4K60 Pro MK.2 Capture Card</td><td>Capture Cards</td><td>$199.99</td></tr>
+</table>
+
+<h3>Events Fired Per Page</h3>
+<table>
+  <tr><th>Page / Action</th><th>Segment Calls</th></tr>
+  <tr><td>Any page load</td><td><code>page()</code></td></tr>
+  <tr><td>Products page</td><td><code>track: Product List Viewed</code></td></tr>
+  <tr><td>Product detail page</td><td><code>track: Product Viewed</code></td></tr>
+  <tr><td>Add to cart</td><td><code>track: Product Added</code></td></tr>
+  <tr><td>Cart page</td><td><code>track: Cart Viewed</code></td></tr>
+  <tr><td>Checkout page</td><td><code>track: Checkout Started</code></td></tr>
+  <tr><td>Place order</td><td><code>identify(email, traits)</code> + <code>track: Order Completed</code></td></tr>
+</table>
+
+<hr class="section-divider">
+
+<h2>2. Segment Workspace Configuration</h2>
+
+<h3>Unify Spaces</h3>
+<p>Three Unify spaces are configured to demonstrate both brand-level and cross-brand identity resolution:</p>
+
+<table>
+  <tr><th>Space</th><th>Space ID</th><th>Purpose</th></tr>
+  <tr>
+    <td><strong>Corsair</strong></td>
+    <td><code>spa_f4wwMB4gEuXotkifqRuCT9</code></td>
+    <td>Resolves profiles from the Corsair storefront only</td>
+  </tr>
+  <tr>
+    <td><strong>Elgato</strong></td>
+    <td><code>spa_uH9idX6UEZMD8Le2Pv35RY</code></td>
+    <td>Resolves profiles from the Elgato storefront only</td>
+  </tr>
+  <tr>
+    <td><strong>Combined Profiles</strong></td>
+    <td><code>spa_ey3sQtGYTeGqM5ksNAdTwS</code></td>
+    <td>Stitches profiles across <em>both</em> brands — shows the unified cross-brand view</td>
+  </tr>
+</table>
+
+<div class="note">
+  <strong>Key demo point:</strong> The Combined Profiles space is the power story. Users who shop on both Corsair and Elgato are stitched into a single profile using email as the identity key — enabling use cases like cross-brand suppression, loyalty, and retargeting that neither brand could achieve independently.
+</div>
+
+<h3>Audiences — Corsair Space</h3>
+<table>
+  <tr><th>Audience</th><th>Trait Key</th><th>Definition</th></tr>
+  <tr><td>Purchased at Corsair</td><td><code>purchased_at_corsair</code></td><td>Completed at least 1 order</td></tr>
+  <tr><td>Corsair High Value Buyer</td><td><code>corsair_high_value_buyer</code></td><td>Order total &gt; $150</td></tr>
+  <tr><td>Corsair Cart Abandoners</td><td><code>corsair_cart_abandoners</code></td><td>Started checkout, no order completed</td></tr>
+  <tr><td>Viewed Product — No Purchase</td><td><code>viewed_corsair_product_no_purchase</code></td><td>Viewed a product, never purchased</td></tr>
+  <tr><td>Corsair Keyboard Shopper</td><td><code>corsair_keyboard_shopper</code></td><td>Viewed a product in the Keyboards category</td></tr>
+</table>
+
+<h3>Audiences — Elgato Space</h3>
+<table>
+  <tr><th>Audience</th><th>Trait Key</th><th>Definition</th></tr>
+  <tr><td>Purchased at Elgato</td><td><code>purchased_at_elgato</code></td><td>Completed at least 1 order</td></tr>
+  <tr><td>Elgato High Value Buyer</td><td><code>elgato_high_value_buyer</code></td><td>Order total &gt; $200</td></tr>
+  <tr><td>Elgato Cart Abandoners</td><td><code>elgato_cart_abandoners</code></td><td>Started checkout, no order completed</td></tr>
+  <tr><td>Stream Deck Interested</td><td><code>stream_deck_interested</code></td><td>Viewed a Stream Controllers product</td></tr>
+  <tr><td>Microphone Shopper</td><td><code>microphone_shopper</code></td><td>Viewed a product in the Microphones category</td></tr>
+</table>
+
+<h3>Audiences — Combined Profiles Space</h3>
+<table>
+  <tr><th>Audience</th><th>Trait Key</th><th>Definition</th></tr>
+  <tr><td>Cross-Brand Buyer</td><td><code>cross_brand_buyer</code></td><td>Purchased from <em>both</em> Corsair and Elgato</td></tr>
+  <tr><td>Any Brand Purchaser</td><td><code>any_brand_purchaser</code></td><td>Completed at least 1 order across either brand</td></tr>
+  <tr><td>High Engagement Browser</td><td><code>high_engagement_browser</code></td><td>Viewed 3 or more products across either site</td></tr>
+  <tr><td>Combined Cart Abandoner</td><td><code>combined_cart_abandoner</code></td><td>Abandoned a cart on either site</td></tr>
+  <tr><td>Recent Buyer — Last 30 Days</td><td><code>recent_buyer_last_30_days</code></td><td>Purchased within the past 30 days</td></tr>
+</table>
+
+<hr class="section-divider">
+
+<h2>3. Pre-Seeded Test Users</h2>
+<p>The workspace contains <strong>3,011 pre-seeded users</strong> total — 11 named personas with intentional journeys (listed below), plus 3,000 bulk users spread across Corsair-only, Elgato-only, and cross-brand segments. The named personas are the best starting point for demos; use the bulk population to show realistic audience sizes.</p>
+
+<table>
+  <tr>
+    <th>Email</th>
+    <th>Name</th>
+    <th>Story</th>
+    <th>Audiences</th>
+  </tr>
+  <tr>
+    <td><code>sarah.okafor@gmail.com</code></td>
+    <td>Sarah Okafor</td>
+    <td>Corsair buyer — K100 keyboard + mouse ($279.98 total)</td>
+    <td>
+      <span class="chip chip-blue">purchased_at_corsair</span>
+      <span class="chip chip-orange">corsair_high_value_buyer</span>
+    </td>
+  </tr>
+  <tr>
+    <td><code>james.whitfield@icloud.com</code></td>
+    <td>James Whitfield</td>
+    <td>Corsair buyer — HS80 headset</td>
+    <td>
+      <span class="chip chip-blue">purchased_at_corsair</span>
+    </td>
+  </tr>
+  <tr>
+    <td><code>priya.nair@outlook.com</code></td>
+    <td>Priya Nair</td>
+    <td>Corsair cart abandoner — iCUE cooler left in cart</td>
+    <td>
+      <span class="chip chip-red">corsair_cart_abandoners</span>
+      <span class="chip chip-grey">viewed_no_purchase</span>
+    </td>
+  </tr>
+  <tr>
+    <td><code>derek.moss@yahoo.com</code></td>
+    <td>Derek Moss</td>
+    <td>Corsair browser only — viewed keyboards 3x, no purchase</td>
+    <td>
+      <span class="chip chip-grey">corsair_keyboard_shopper</span>
+      <span class="chip chip-grey">viewed_no_purchase</span>
+      <span class="chip chip-green">high_engagement_browser</span>
+    </td>
+  </tr>
+  <tr>
+    <td><code>chloe.bertrand@gmail.com</code></td>
+    <td>Chloe Bertrand</td>
+    <td>Elgato buyer — Facecam Pro ($299.99)</td>
+    <td>
+      <span class="chip chip-blue">purchased_at_elgato</span>
+      <span class="chip chip-orange">elgato_high_value_buyer</span>
+    </td>
+  </tr>
+  <tr>
+    <td><code>marcus.le@proton.me</code></td>
+    <td>Marcus Le</td>
+    <td>Elgato buyer — Stream Deck XL ($249.99)</td>
+    <td>
+      <span class="chip chip-blue">purchased_at_elgato</span>
+      <span class="chip chip-orange">elgato_high_value_buyer</span>
+    </td>
+  </tr>
+  <tr>
+    <td><code>tariq.hassan@gmail.com</code></td>
+    <td>Tariq Hassan</td>
+    <td>Elgato cart abandoner — Stream Deck MK.2 left in cart</td>
+    <td>
+      <span class="chip chip-red">elgato_cart_abandoners</span>
+      <span class="chip chip-grey">stream_deck_interested</span>
+    </td>
+  </tr>
+  <tr>
+    <td><code>nina.volkov@outlook.com</code></td>
+    <td>Nina Volkov</td>
+    <td>Elgato browser — viewed Wave:3 microphone, no purchase</td>
+    <td>
+      <span class="chip chip-grey">microphone_shopper</span>
+    </td>
+  </tr>
+  <tr style="background: #fffde7;">
+    <td><code>alex.chen@techco.io</code></td>
+    <td>Alex Chen</td>
+    <td><strong>Cross-brand buyer</strong> — Corsair cooler + Elgato Wave:3 mic</td>
+    <td>
+      <span class="chip chip-blue">purchased_at_corsair</span>
+      <span class="chip chip-blue">purchased_at_elgato</span>
+      <span class="chip chip-orange">cross_brand_buyer</span>
+      <span class="chip chip-green">any_brand_purchaser</span>
+    </td>
+  </tr>
+  <tr style="background: #fffde7;">
+    <td><code>jordan.kim@agency.com</code></td>
+    <td>Jordan Kim</td>
+    <td><strong>Cross-brand power user</strong> — Corsair keyboard + Elgato Stream Deck &amp; Facecam ($619.97 total)</td>
+    <td>
+      <span class="chip chip-blue">purchased_at_corsair</span>
+      <span class="chip chip-blue">purchased_at_elgato</span>
+      <span class="chip chip-orange">cross_brand_buyer</span>
+      <span class="chip chip-orange">elgato_high_value_buyer</span>
+      <span class="chip chip-green">high_engagement_browser</span>
+    </td>
+  </tr>
+  <tr style="background: #fffde7;">
+    <td><code>mia.torres@studio.co</code></td>
+    <td>Mia Torres</td>
+    <td><strong>Cross-brand buyer</strong> — Corsair headset + Elgato Key Light</td>
+    <td>
+      <span class="chip chip-blue">purchased_at_corsair</span>
+      <span class="chip chip-blue">purchased_at_elgato</span>
+      <span class="chip chip-orange">cross_brand_buyer</span>
+      <span class="chip chip-green">high_engagement_browser</span>
+    </td>
+  </tr>
+</table>
+
+<div class="tip">
+  <strong>Best profiles for the demo:</strong> The three highlighted users — Alex, Jordan, and Mia — each shopped on <em>both</em> sites using the same email address. Look them up in the Combined Profiles space to see identity stitching in action. Jordan in particular has 6 product views across both sites and a combined spend of ~$620.
+</div>
+
+<hr class="section-divider">
+
+<h2>4. How to Test</h2>
+
+<h3>Looking Up a Profile via the API</h3>
+<p>You can query any pre-seeded user's resolved profile using the Segment Profile API:</p>
+<pre style="background:#f1f3f4;padding:12px 16px;border-radius:4px;font-size:9.5pt;overflow-x:auto;"><code>curl https://profiles.segment.com/v1/spaces/{space_id}/collections/users/profiles/email:{email}/traits \
+  -u "&lt;profile_api_token&gt;:"</code></pre>
+<p>Replace <code>{space_id}</code> with the relevant space ID from Section 2, <code>{email}</code> with any of the test user emails from Section 3, and use the Profile API token as the Basic Auth username with a <strong>blank password</strong> (the trailing colon in <code>-u "token:"</code> is required).</p>
+
+<h3>Generating Your Own Events via the Demo Sites</h3>
+<ol>
+  <li>Open either demo URL in your browser.</li>
+  <li>Browse products and add items to your cart.</li>
+  <li>Proceed to checkout and enter <strong>any email address</strong> — this fires an <code>identify</code> call that ties your anonymous browsing session to a known profile.</li>
+  <li>Complete the order — this fires <code>Order Completed</code> and populates purchase-based audiences.</li>
+  <li>Check the <strong>Events</strong> widget (bottom-left) to see every call fire in real time.</li>
+  <li>To test cross-brand stitching, use the <strong>same email address</strong> on both the Corsair and Elgato sites, then look up your profile in the Combined Profiles space.</li>
+</ol>
+
+<h3>Testing Cross-Brand Identity Resolution</h3>
+<ol>
+  <li>Go to the Corsair site, add something to cart, checkout with your email.</li>
+  <li>Go to the Elgato site, add something to cart, checkout with the <strong>same email</strong>.</li>
+  <li>Wait ~2–3 minutes for Unify to process.</li>
+  <li>Query the Combined Profiles space using your email — you'll see a single stitched profile with events from both sources, and the <code>cross_brand_buyer</code> audience trait set to <code>true</code>.</li>
+</ol>
+
+<hr class="section-divider">
+
+<h2>5. Testing with Postman</h2>
+
+<p>Postman is the easiest way to send raw events and query profiles without touching the demo sites. The two sections below cover everything you need: sending data in via the Segment HTTP Tracking API, and pulling audience membership out via the Profile API.</p>
+
+<h3>5a. Sending Events — Segment HTTP Tracking API</h3>
+
+<p>The Tracking API accepts <code>identify</code>, <code>track</code>, and <code>page</code> calls. Authentication is Basic auth with the <strong>write key as the username</strong> and an empty password.</p>
+
+<table>
+  <tr><th>Field</th><th>Value</th></tr>
+  <tr><td>Base URL</td><td><code>https://api.segment.io/v1</code></td></tr>
+  <tr><td>Method</td><td><code>POST</code></td></tr>
+  <tr><td>Auth type</td><td>Basic Auth</td></tr>
+  <tr><td>Username</td><td>Write key for the source you want to send to (see below)</td></tr>
+  <tr><td>Password</td><td><em>leave blank</em></td></tr>
+  <tr><td>Content-Type header</td><td><code>application/json</code></td></tr>
+</table>
+
+<table>
+  <tr><th>Site</th><th>Write Key (use as Basic Auth username)</th></tr>
+  <tr><td>Corsair</td><td><code>8kaqLmYEhmEHzemxYWsD6rip6GHFaj9L</code></td></tr>
+  <tr><td>Elgato</td><td><code>TP7mEFeOwIMczsGdFmBQsbG08b6gXJTP</code></td></tr>
+</table>
+
+<div class="note">
+  <strong>Tip:</strong> Set up two environments in Postman — one for Corsair and one for Elgato — each with a <code>writeKey</code> variable. Use <code>{{writeKey}}</code> in the Authorization tab so you can switch sources without editing every request.
+</div>
+
+<h3>Example 1 — identify (create or update a user profile)</h3>
+<p>Send this to <code>POST https://api.segment.io/v1/identify</code> to create a new user or update traits on an existing one. This is what fires on checkout in the demo sites.</p>
+<pre style="background:#f1f3f4;padding:14px 16px;border-radius:4px;font-size:9pt;overflow-x:auto;line-height:1.55;"><code>{
+  "userId": "test.user@yourcompany.com",
+  "traits": {
+    "email":     "test.user@yourcompany.com",
+    "firstName": "Test",
+    "lastName":  "User",
+    "city":      "San Francisco"
+  },
+  "timestamp": "2026-05-20T12:00:00Z"
+}</code></pre>
+
+<h3>Example 2 — track: Product Viewed</h3>
+<p>Send to <code>POST https://api.segment.io/v1/track</code>. Use the Corsair write key to populate the <code>corsair_keyboard_shopper</code> audience, or the Elgato write key for <code>stream_deck_interested</code>.</p>
+<pre style="background:#f1f3f4;padding:14px 16px;border-radius:4px;font-size:9pt;overflow-x:auto;line-height:1.55;"><code>{
+  "userId": "test.user@yourcompany.com",
+  "event": "Product Viewed",
+  "properties": {
+    "product_id": "k100-rgb",
+    "sku":        "CH-9109114-NA",
+    "name":       "K100 RGB Optical-Mechanical Keyboard",
+    "price":      169.99,
+    "category":   "Keyboards",
+    "brand":      "Corsair"
+  },
+  "timestamp": "2026-05-20T12:01:00Z"
+}</code></pre>
+
+<h3>Example 3 — track: Order Completed (Corsair)</h3>
+<p>Send to <code>POST https://api.segment.io/v1/track</code> with the <strong>Corsair write key</strong>. This will add the user to <code>purchased_at_corsair</code>. If the order total exceeds $150 it also triggers <code>corsair_high_value_buyer</code>. The top-level <code>brand</code> field is required for the <code>cross_brand_buyer</code> audience to evaluate correctly.</p>
+<pre style="background:#f1f3f4;padding:14px 16px;border-radius:4px;font-size:9pt;overflow-x:auto;line-height:1.55;"><code>{
+  "userId": "test.user@yourcompany.com",
+  "event": "Order Completed",
+  "properties": {
+    "order_id": "TEST001",
+    "total":    279.98,
+    "revenue":  279.98,
+    "currency": "USD",
+    "brand":    "Corsair",
+    "products": [
+      {
+        "product_id": "k100-rgb",
+        "sku":        "CH-9109114-NA",
+        "name":       "K100 RGB Optical-Mechanical Keyboard",
+        "price":      169.99,
+        "quantity":   1,
+        "category":   "Keyboards",
+        "brand":      "Corsair"
+      },
+      {
+        "product_id": "dark-core-pro-se",
+        "sku":        "CH-9315511-NA",
+        "name":       "Dark Core RGB Pro SE Wireless Mouse",
+        "price":      109.99,
+        "quantity":   1,
+        "category":   "Mice",
+        "brand":      "Corsair"
+      }
+    ]
+  },
+  "timestamp": "2026-05-20T12:05:00Z"
+}</code></pre>
+
+<h3>Example 4 — track: Order Completed (Elgato)</h3>
+<p>Send this to <code>POST https://api.segment.io/v1/track</code> with the <strong>Elgato write key</strong>. Pair it with Example 1 and Example 3 using the <strong>same <code>userId</code></strong> to create a cross-brand buyer that will appear in the Combined Profiles space's <code>cross_brand_buyer</code> audience. The top-level <code>brand</code> field is required.</p>
+<pre style="background:#f1f3f4;padding:14px 16px;border-radius:4px;font-size:9pt;overflow-x:auto;line-height:1.55;"><code>{
+  "userId": "test.user@yourcompany.com",
+  "event": "Order Completed",
+  "properties": {
+    "order_id": "TEST002",
+    "total":    149.99,
+    "revenue":  149.99,
+    "currency": "USD",
+    "brand":    "Elgato",
+    "products": [
+      {
+        "product_id": "wave-3",
+        "sku":        "10MAB9901",
+        "name":       "Wave:3 USB Microphone",
+        "price":      149.99,
+        "quantity":   1,
+        "category":   "Microphones",
+        "brand":      "Elgato"
+      }
+    ]
+  },
+  "timestamp": "2026-05-20T12:10:00Z"
+}</code></pre>
+
+<h3>Example 5 — track: Checkout Started (no purchase — cart abandoner)</h3>
+<p>Send to <code>POST https://api.segment.io/v1/track</code> <em>without</em> a following Order Completed to add this user to <code>corsair_cart_abandoners</code> or <code>elgato_cart_abandoners</code>.</p>
+<pre style="background:#f1f3f4;padding:14px 16px;border-radius:4px;font-size:9pt;overflow-x:auto;line-height:1.55;"><code>{
+  "userId": "test.user@yourcompany.com",
+  "event": "Checkout Started",
+  "properties": {
+    "order_id": "TEST003",
+    "value":    199.99,
+    "currency": "USD",
+    "products": [
+      {
+        "product_id": "key-light",
+        "sku":        "10GAK9901",
+        "name":       "Key Light",
+        "price":      199.99,
+        "quantity":   1,
+        "category":   "Lighting",
+        "brand":      "Elgato"
+      }
+    ]
+  },
+  "timestamp": "2026-05-20T12:15:00Z"
+}</code></pre>
+
+<hr class="section-divider">
+
+<h2>5b. Querying Profiles &amp; Audience Membership — Profile API</h2>
+
+<p>The Profile API lets you look up a resolved user profile and see which audiences they belong to. Authentication uses <strong>Basic Auth with the Profile API access token as the username</strong> and an empty password.</p>
+
+<div class="note">
+  <strong>Profile API tokens are pre-configured for this demo environment.</strong> Use the tokens from the Reference table in Section 6 — one per space, as Basic Auth username with a blank password.
+</div>
+
+<table>
+  <tr><th>Field</th><th>Value</th></tr>
+  <tr><td>Base URL</td><td><code>https://profiles.segment.com/v1/spaces/{spaceId}</code></td></tr>
+  <tr><td>Method</td><td><code>GET</code></td></tr>
+  <tr><td>Auth type</td><td>Basic Auth</td></tr>
+  <tr><td>Username</td><td>Profile API token for the space</td></tr>
+  <tr><td>Password</td><td><em>leave blank</em></td></tr>
+</table>
+
+<table>
+  <tr><th>Space</th><th>Space ID</th></tr>
+  <tr><td>Corsair</td><td><code>spa_f4wwMB4gEuXotkifqRuCT9</code></td></tr>
+  <tr><td>Elgato</td><td><code>spa_uH9idX6UEZMD8Le2Pv35RY</code></td></tr>
+  <tr><td>Combined Profiles</td><td><code>spa_ey3sQtGYTeGqM5ksNAdTwS</code></td></tr>
+</table>
+
+<p>Profiles can be looked up by any known identifier. The most useful for this demo is <strong>email</strong>:</p>
+<pre style="background:#f1f3f4;padding:10px 16px;border-radius:4px;font-size:9pt;"><code>/collections/users/profiles/email:{email}/traits</code></pre>
+
+<h3>Example 6 — Get all traits for a user (including audience membership)</h3>
+<p>Audience membership is stored as boolean traits on the profile. A value of <code>true</code> means the user is in that audience.</p>
+<p><strong>GET</strong> <code>https://profiles.segment.com/v1/spaces/spa_f4wwMB4gEuXotkifqRuCT9/collections/users/profiles/email:jordan.kim@agency.com/traits?limit=200</code><br>
+<strong>Basic Auth username:</strong> <code style="font-size:8pt;">JxZKgPl_g-sQZSKMU3eZgA1j1JwridhepQY37mQDF7ga8YEwr-4OlcYuhlCPVyy5...</code> (full token in Section 6)</p>
+<p>Expected response (Corsair space):</p>
+<pre style="background:#f1f3f4;padding:14px 16px;border-radius:4px;font-size:9pt;overflow-x:auto;line-height:1.55;"><code>{
+  "traits": {
+    "email":                    "jordan.kim@agency.com",
+    "firstName":                "Jordan",
+    "lastName":                 "Kim",
+    "city":                     "New York",
+    "purchased_at_corsair":     true,
+    "corsair_keyboard_shopper": true
+  },
+  "cursor": { ... }
+}</code></pre>
+
+<h3>Example 7 — Get traits from the Combined Profiles space (cross-brand view)</h3>
+<p>Query the same user in the Combined Profiles space to see stitched traits from both sources and the <code>cross_brand_buyer</code> audience flag:</p>
+<p><strong>GET</strong> <code>https://profiles.segment.com/v1/spaces/spa_ey3sQtGYTeGqM5ksNAdTwS/collections/users/profiles/email:jordan.kim@agency.com/traits?limit=200</code><br>
+<strong>Basic Auth username:</strong> <code style="font-size:8pt;">3LMamIlpooTD681QvBAdrE1N12-QsA0qM0DchSG720RYRO2dPJPc1I4XFPW-x23r...</code> (full token in Section 6)</p>
+<p>Expected response:</p>
+<pre style="background:#f1f3f4;padding:14px 16px;border-radius:4px;font-size:9pt;overflow-x:auto;line-height:1.55;"><code>{
+  "traits": {
+    "email":                        "jordan.kim@agency.com",
+    "firstName":                    "Jordan",
+    "lastName":                     "Kim",
+    "purchased_at_corsair":         true,
+    "purchased_at_elgato":          true,
+    "cross_brand_buyer":            true,
+    "any_brand_purchaser":          true,
+    "elgato_high_value_buyer":      true,
+    "high_engagement_browser":      true,
+    "recent_buyer_last_30_days":    true
+  },
+  "cursor": { ... }
+}</code></pre>
+
+<h3>Example 8 — Get all external IDs (identity graph) for a user</h3>
+<p>This endpoint shows every identifier Segment has associated with the profile — useful for verifying that anonymous IDs from the demo sites have been stitched to the known email identity.</p>
+<p><strong>GET</strong> <code>https://profiles.segment.com/v1/spaces/spa_ey3sQtGYTeGqM5ksNAdTwS/collections/users/profiles/email:jordan.kim@agency.com/external_ids</code><br>
+<strong>Basic Auth username:</strong> <code style="font-size:8pt;">3LMamIlpooTD681QvBAdrE1N12-QsA0qM0DchSG720RYRO2dPJPc1I4XFPW-x23r...</code> (full token in Section 6)</p>
+<pre style="background:#f1f3f4;padding:14px 16px;border-radius:4px;font-size:9pt;overflow-x:auto;line-height:1.55;"><code>{
+  "data": [
+    { "type": "user_id",      "id": "jordan.kim@agency.com",  "source_id": "..." },
+    { "type": "email",        "id": "jordan.kim@agency.com",  "source_id": "..." },
+    { "type": "anonymous_id", "id": "b3f2a1c8-...",           "source_id": "..." }
+  ],
+  "cursor": { ... }
+}</code></pre>
+
+<h3>Example 9 — Get a user's event history</h3>
+<p>Returns the raw event stream for the profile — useful for confirming that events sent via the demo sites or Postman have been ingested correctly.</p>
+<p><strong>GET</strong> <code>https://profiles.segment.com/v1/spaces/spa_f4wwMB4gEuXotkifqRuCT9/collections/users/profiles/email:sarah.okafor@gmail.com/events?limit=10</code><br>
+<strong>Basic Auth username:</strong> <code style="font-size:8pt;">JxZKgPl_g-sQZSKMU3eZgA1j1JwridhepQY37mQDF7ga8YEwr-4OlcYuhlCPVyy5...</code> (full token in Section 6)</p>
+<pre style="background:#f1f3f4;padding:14px 16px;border-radius:4px;font-size:9pt;overflow-x:auto;line-height:1.55;"><code>{
+  "data": [
+    {
+      "type":      "track",
+      "event":     "Order Completed",
+      "timestamp": "2026-05-11T...",
+      "properties": {
+        "order_id": "SARAH01",
+        "total":    279.98,
+        "products": [ ... ]
+      }
+    },
+    {
+      "type":      "track",
+      "event":     "Product Viewed",
+      "timestamp": "2026-05-11T...",
+      "properties": { "name": "K100 RGB Optical-Mechanical Keyboard", ... }
+    }
+  ],
+  "cursor": { ... }
+}</code></pre>
+
+<div class="tip">
+  <strong>Recommended Postman workflow:</strong>
+  <ol style="margin:6px 0 0 16px;padding:0;">
+    <li>Create a Collection called <strong>Segment Demo</strong> with two folders: <em>Send Events</em> and <em>Profile API</em>.</li>
+    <li>Create two Environments: <em>Corsair</em> and <em>Elgato</em>, each with variables <code>writeKey</code> and <code>profileToken</code> and <code>spaceId</code>.</li>
+    <li>Add a third environment <em>Combined</em> with the Combined Profiles <code>spaceId</code> and its own <code>profileToken</code>.</li>
+    <li>Send Examples 1–3 with the Corsair environment, then Examples 1 &amp; 4 with the Elgato environment using the <strong>same email</strong>.</li>
+    <li>Wait ~2 minutes, then run Examples 7 &amp; 8 in the Combined environment to see the stitched cross-brand profile.</li>
+  </ol>
+</div>
+
+<hr class="section-divider">
+
+<h2>6. Reference</h2>
+
+<table>
+  <tr><th>Item</th><th>Value</th></tr>
+  <tr><td>Corsair demo URL</td><td><a href="https://ca108d55718b.ngrok.app">https://ca108d55718b.ngrok.app</a></td></tr>
+  <tr><td>Elgato demo URL</td><td><a href="https://609c6fa8bd76.ngrok.app">https://609c6fa8bd76.ngrok.app</a></td></tr>
+  <tr><th colspan="2" style="background:#f0f4ff;color:#1967d2;">Tracking API — Write Keys (Basic Auth username, blank password)</th></tr>
+  <tr><td>Corsair write key</td><td><code>8kaqLmYEhmEHzemxYWsD6rip6GHFaj9L</code></td></tr>
+  <tr><td>Elgato write key</td><td><code>TP7mEFeOwIMczsGdFmBQsbG08b6gXJTP</code></td></tr>
+  <tr><th colspan="2" style="background:#f0f4ff;color:#1967d2;">Unify — Space IDs</th></tr>
+  <tr><td>Corsair space ID</td><td><code>spa_f4wwMB4gEuXotkifqRuCT9</code></td></tr>
+  <tr><td>Elgato space ID</td><td><code>spa_uH9idX6UEZMD8Le2Pv35RY</code></td></tr>
+  <tr><td>Combined Profiles space ID</td><td><code>spa_ey3sQtGYTeGqM5ksNAdTwS</code></td></tr>
+  <tr><th colspan="2" style="background:#f0f4ff;color:#1967d2;">Profile API — Access Tokens (Basic Auth username, blank password)</th></tr>
+  <tr><td>Corsair Profile API token</td><td><code style="font-size:8pt;word-break:break-all;">JxZKgPl_g-sQZSKMU3eZgA1j1JwridhepQY37mQDF7ga8YEwr-4OlcYuhlCPVyy5buzFrS7RuhaqLYZhaghRU3hR35HRmKW5t7PxXhjYZCePup7N4caPjJZv_uQzDWWkG0LS7RAkT2mGlPT4L3uuwyDOOOZ4qC0FkY-fMfYX8RTZKviwvZlJj7ekiIIkJXlu0Yb04FpjtntzlZEC4WfyJYiactSu24IDZaD8G8QHY-0HhG0fqmC86U_Zq-QCMDPCzQYKLdNNgqbRR8Bn9F6zZ04T880=</code></td></tr>
+  <tr><td>Elgato Profile API token</td><td><code style="font-size:8pt;word-break:break-all;">ouiwUiDO5k5KMeNJeNvDzRZpk_dU-4U1xuxwDztjBO1TB7RkuPb-9jLeHgMoSHVkdkTCoKjLiSuz9DAjIn-fr49bEsVP6wFTFz8DyHLTTFOWsiBYU2Y6iOCQNU5hvxsJ0ZNvHDqNvd9Dl53pHb6tW9Q9XQ7sLv7yDflLZiv9upfJN-SWaYijXvA-WqM6dy_LBLcymKkXtUenvwt0wuw5C8Ohk_Bnr_KIeP73WsjYi3-WA5C-lGMayYeJBlq8ZqjjmcuSzgy0a9cl4rfhZR9phbt1Fgw=</code></td></tr>
+  <tr><td>Combined Profiles API token</td><td><code style="font-size:8pt;word-break:break-all;">3LMamIlpooTD681QvBAdrE1N12-QsA0qM0DchSG720RYRO2dPJPc1I4XFPW-x23rcI6sky0u8D8w5vVYzTj9ir8krvd4Y2LsEn_4iMWZVtimxoEkwg9gzoK3778tIj3RR3UyvZfjnxnvoxOEoYzGd1MeF_YtDQ0mGWgz5LCLh_VBvlfqqz3avb7pCd2CNjbqIc3PgR8-OSoB5ax7j8TcTPSqSAmLZweXkoJfJxDnk2xWD81kO6Uhz2kjpv8OEgNi2QCZx4OaT2NYF6KGspkklZm_rN4=</code></td></tr>
+</table>
+
+<p style="margin-top:40px;color:#5f6368;font-size:9pt;">Prepared by Twilio Segment Solutions Engineering &nbsp;·&nbsp; For internal and customer testing purposes only &nbsp;·&nbsp; Demo URLs require ngrok tunnel to be running</p>
+
+</body>
+</html>
