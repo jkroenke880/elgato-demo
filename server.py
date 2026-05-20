@@ -3,7 +3,7 @@
 import http.server
 import os
 
-PORT = 8082
+PORT = int(os.environ.get('PORT', 8082))
 DEMO_DIR = os.path.dirname(os.path.abspath(__file__))
 
 
